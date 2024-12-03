@@ -4,10 +4,10 @@ library(tidyverse)
 
 
 grid <- (0:100)/10
-
+?sample
 random_decomposition <- function(lambda){
   sample_size <- 200
-  train_indices <- sample(400, size = sample_size)
+  train_indices <- sample(400, size = sample_size, replace = FALSE)
   train_data <- Credit[train_indices, ]
   test_data <- Credit[-train_indices, ]
   
@@ -23,6 +23,7 @@ random_decomposition <- function(lambda){
   vorhersagen <- predict(fit_ridge, test, s="lambda.min")
   
   L2_Fehler <- 0
+  # böse schleife nein nein 
   for (l in (1:200)){
     L2_Fehler <- L2_Fehler + (vorhersagen[l] - test_data$Balance[l])^2
   }
@@ -40,6 +41,7 @@ for (i in (1:101)){
   L2_Fehler_nach_lambda[i] <- sqrt( (1/1000) * L2_Fehler)
 }
 
+# glmnet bei least squares nicht gut?
 
 temp <- 0
 for (i in (1:1000)){
@@ -47,9 +49,18 @@ for (i in (1:1000)){
 }
 L2_Fehler_LS <- sqrt( (1/1000) * temp)
 
+# bei daniel ist minimum bei 0.1
+# randomness? 
 
 ggplot() + 
   geom_point(aes(x=grid, y = L2_Fehler_nach_lambda), size = 2) +
-  geom_point(aes(x=0, y=L2_Fehler_LS), color = "red", size = 2)
+  geom_point(aes(x=0, y=L2_Fehler_LS), color = "red", size = 2) +
+  labs(
+  x = "Lambda",
+  y = "L2 Fehler",
+  title = "L2 Fehler abhängig von Lambda"
+  ) 
 
 ## simply fitting the model with just an intercept?
+
+
